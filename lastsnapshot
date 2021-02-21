@@ -1,0 +1,4 @@
+#!/bin/bash
+
+fn=$(ls /mnt/c/Users/lobac_000/Downloads -tp | grep -v /$ | head -1)
+cp /mnt/c/Users/lobac_000/Downloads/${fn} .

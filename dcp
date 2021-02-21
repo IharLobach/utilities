@@ -1,0 +1,3 @@
+#!/bin/bash
+  
+cp /mnt/c/Users/lobac_000/Downloads/$1 .

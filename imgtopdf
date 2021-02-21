@@ -1,0 +1,51 @@
+#!/usr/bin/python3
+
+
+temp_dir = "/tmp/imgtopdf_temp"
+
+import sys
+import os
+import argparse
+
+parser = argparse.ArgumentParser(description='Combine several images into one pdf file.')
+parser.add_argument('image_files', metavar='image_files', type=str, nargs='+',
+                    help='Image files to be combined.')
+parser.add_argument('output_file', metavar='output_file', type=str, nargs=1,
+                    help='Name of output file')
+parser.add_argument('--papersize', type=str, default="a4paper",
+                    metavar='papersize', help="type of paper (a4paper, letterpaper), default is a4paper")
+
+args = parser.parse_args()
+image_files = args.image_files
+output_file = args.output_file[0]
+papersize = args.papersize
+
+
+tex_file =  r"\documentclass[" + papersize + "]{article}"\
+            +r"\usepackage{pdfpages}"\
+            +r"\usepackage[margin=0pt]{geometry}"\
+            +r"\usepackage{graphicx}"\
+            +r"\begin{document}"\
+            +r"\centering{"
+
+for image_file in image_files:
+    tex_file += r"\includegraphics[width=.99\paperwidth,totalheight=."\
+                +r"99\paperheight,keepaspectratio]{"+image_file+"}"\
+                +r"\clearpage"
+
+tex_file += r"}\end{document}"
+
+
+os.system(f'mkdir {temp_dir}')
+
+for image_file in image_files:
+    os.system(f"cp {image_file} {temp_dir}/{image_file}")
+
+with open(f"{temp_dir}/imgtopdf.tex", "w") as f:
+    f.write(tex_file)
+
+os.system(f"pdflatex -output-directory={temp_dir} {temp_dir}/imgtopdf.tex >/dev/null")
+
+os.system(f"cp {temp_dir}/imgtopdf.pdf {output_file}")
+
+os.system(f"rm -rf {temp_dir}")
